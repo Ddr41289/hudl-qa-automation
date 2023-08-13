@@ -7,7 +7,7 @@ namespace hudl_qa_automation.Pages
 {
     public class LoginPage : BasePage
     {
-        public IWebDriver _driver;
+        private readonly IWebDriver _driver;
 
         #region Variables
         #endregion
@@ -24,12 +24,12 @@ namespace hudl_qa_automation.Pages
         public LoginPage(IWebDriver driver) : base(driver)
         {
             _driver = driver;
-            Wait.Seconds(5);
-            //Could not use wait for PageToLoad due to transition screen
+            Wait.ForPageToLoad(_driver, 10);
+            //Issues using wait for PageToLoad due to transition screen
             driver.SwitchTo().DefaultContent();
+            _driver.Title.ShouldBe("Log In");
             //Could not Assert driver.Title shouldBe "Log In", because theres a screen that displays in transition that has the title: "One platform to help the whole team improve | Hudl"
         }
-
 
         #endregion
 
@@ -37,8 +37,13 @@ namespace hudl_qa_automation.Pages
 
         public LoginPage Click(By by)
         {
-            Wait.UntilElementIsClickable(by);
             _driver.FindElement(by).Click();
+            return this;
+        }
+
+        public LoginPage SendText(By by, string text) 
+        {
+            _driver.FindElement(by).SendKeys(text);
             return this;
         }
 
@@ -46,8 +51,9 @@ namespace hudl_qa_automation.Pages
         {
             string jsonFilePath = "C:\\Users\\docda\\source\\repos\\hudl-qa-automation\\Config\\loginCredentials.json";
             (string username, string password) = ReadCredentialsFromJson(jsonFilePath);
-            _driver.FindElement(emailInput).SendKeys(username);
-            _driver.FindElement(passwordInput).SendKeys(password);
+            
+            SendText(emailInput, username);
+            SendText(passwordInput, password);
             Click(continueButton);
             return this;
         }

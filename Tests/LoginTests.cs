@@ -48,7 +48,8 @@ namespace hudl_qa_automation.Tests
         {
             loginPage = new(_driver);
             loginPage
-                 .InvalidLogin("random_", "willFail");
+                 .InvalidLogin("random", "willFail");
+            //Would add verification that the failure message displays
         }
 
         [TearDown]
